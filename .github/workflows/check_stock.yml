@@ -2,8 +2,8 @@ name: Panini Stock Watcher
 
 on:
   schedule:
-    - cron: "*/15 7-23 * * *"  # cada 15 min, das 8h às 00h (Lisboa = UTC+1)
-  workflow_dispatch:             # permite correr manualmente a qualquer momento
+    - cron: "*/15 7-23 * * *"
+  workflow_dispatch:
 
 jobs:
   check:
@@ -12,6 +12,13 @@ jobs:
     steps:
       - name: Checkout código
         uses: actions/checkout@v4
+
+      - name: Restaurar estado anterior
+        uses: actions/cache@v4
+        with:
+          path: stock_state.json
+          key: stock-state
+          restore-keys: stock-state
 
       - name: Configurar Python
         uses: actions/setup-python@v5
@@ -26,3 +33,10 @@ jobs:
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
         run: python check_stock.py
+
+      - name: Guardar estado
+        uses: actions/cache/save@v4
+        if: always()
+        with:
+          path: stock_state.json
+          key: stock-state-${{ github.run_id }}
