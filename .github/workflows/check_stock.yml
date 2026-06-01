@@ -5,26 +5,23 @@ on:
     - cron: "*/15 7-23 * * *"  # cada 15 min, das 8h às 00h (Lisboa = UTC+1)
   workflow_dispatch:             # permite correr manualmente a qualquer momento
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-
 jobs:
   check:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout código
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Restaurar estado anterior
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v5
         with:
           path: stock_state.json
           key: stock-state-${{ github.run_id }}
           restore-keys: stock-state
 
       - name: Configurar Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -38,7 +35,7 @@ jobs:
         run: python check_stock.py
 
       - name: Guardar estado
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         if: always()
         with:
           path: stock_state.json
