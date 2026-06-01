@@ -27,19 +27,19 @@ HEADERS = {
 STATE_FILE = "stock_state.json"
 
 
-def carregar_estado():
+def carregar_estado() -> dict:
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE) as f:
             return json.load(f)
     return {}
 
 
-def guardar_estado(estado):
+def guardar_estado(estado: dict) -> None:
     with open(STATE_FILE, "w") as f:
         json.dump(estado, f, indent=2)
 
 
-def verificar_stock(url):
+def verificar_stock(url: str) -> bool | None:
     try:
         r = requests.get(url, headers=HEADERS, timeout=20)
         r.raise_for_status()
@@ -48,7 +48,7 @@ def verificar_stock(url):
         # Sinal 1: botão "Adicionar ao carrinho" presente?
         add_btn = soup.find("button", {"id": "product-addtocart-button"})
 
-        # Sinal 2: texto "Indisponível" presente?
+        # Sinal 2: texto "Indisponível" presente na página?
         indisponivel = any(
             "Indispon" in tag.get_text()
             for tag in soup.find_all(["span", "p", "div", "button"])
@@ -59,22 +59,22 @@ def verificar_stock(url):
 
     except Exception as e:
         print(f"  ⚠ Erro ao verificar {url}: {e}")
-        return None  # None = inconclusivo, não alterar estado
+        return None  # inconclusivo — não alterar estado
 
 
-def enviar_telegram(mensagem):
-    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+def enviar_telegram(mensagem: str) -> None:
+    api_url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     payload = {
         "chat_id": CHAT_ID,
         "text": mensagem,
         "parse_mode": "HTML",
         "disable_web_page_preview": False,
     }
-    r = requests.post(url, json=payload, timeout=10)
+    r = requests.post(api_url, json=payload, timeout=10)
     r.raise_for_status()
 
 
-def main():
+def main() -> None:
     estado = carregar_estado()
 
     for produto in PRODUTOS:
@@ -91,8 +91,8 @@ def main():
 
         estava_em_stock = estado.get(key, False)
 
-        print(f"  → Agora: {'✅ Em stock' if em_stock else '❌ Sem stock'}")
-        print(f"  → Antes: {'✅ Em stock' if estava_em_stock else '❌ Sem stock'}")
+        print(f"  → Agora:  {'✅ Em stock' if em_stock else '❌ Sem stock'}")
+        print(f"  → Antes:  {'✅ Em stock' if estava_em_stock else '❌ Sem stock'}")
 
         if em_stock and not estava_em_stock:
             msg = (
@@ -115,7 +115,7 @@ def main():
         estado[key] = em_stock
 
     guardar_estado(estado)
-    print(f"\n💾 Estado guardado.")
+    print("\n💾 Estado guardado.")
 
 
 if __name__ == "__main__":
