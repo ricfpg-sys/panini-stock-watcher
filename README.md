@@ -8,7 +8,7 @@ Corre automaticamente na cloud com **GitHub Actions** — gratuitamente, sem ser
 
 ## Como funciona
 
-1. O GitHub Actions corre o script a cada 15 minutos (das 8h às 00h, hora de Lisboa)
+1. O GitHub Actions corre o script a cada 15 minutos (24h por dia)
 2. O script acede à página de cada produto e deteta se está disponível
 3. Se o estado mudou (sem stock → com stock), envia uma mensagem Telegram imediatamente
 4. O estado anterior é guardado para evitar notificações repetidas
@@ -106,3 +106,5 @@ O output mostra o estado atual de cada produto em tempo real.
 - Repositório **público** = minutos GitHub Actions ilimitados e gratuitos
 - O GitHub pode desativar workflows agendados após **60 dias sem commits** — faz um commit ocasional ou usa o botão "Run workflow" para manter ativo
 - Os atrasos de execução podem chegar a 10–30 minutos em horas de pico, o que é aceitável para alertas de stock
+
+<!-- last updated: 2026-06-02 09:59 UTC -->
